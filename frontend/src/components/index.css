@@ -1,0 +1,63 @@
+
+.form-container{
+  display: none;
+}
+
+/* Adjustments for mobile devices */
+@media only screen and (max-width: 768px) {
+
+  /* Full screen background with the form centered */
+.form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Ensures full screen height */
+  background-image: url('/public/assets/c3.jpg'); /* Ensure the image path is correct */
+  background-size: cover; /* Make the background image cover the whole screen */
+  background-position: left; /* Center the background image */
+  background-repeat: no-repeat; /* Prevent the background from repeating */
+  position: relative; /* To position the button absolutely */
+  padding: 20px;
+}
+
+/* Styling for top logo */
+.top_logo {
+  position: absolute;
+  top: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
+
+/* Centering form content and giving some padding */
+.form-input {
+  padding: 40px;
+  border-radius: 10px;
+  color: white;
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Styling the submit button to be fixed at the bottom */
+.btn1 {
+  background: linear-gradient(to right, #1367C1, #FF1B05, #FBB03C);
+  border: none;
+  width: 100%;
+  font-weight: bold;
+  color: white;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%); /* Centering the button horizontally */
+  padding: 15px;
+  border-radius: 5px;
+  text-align: center;
+}
+  .form-container {
+      padding: 20px;
+  }
+
+  .btn1 {
+      bottom: 0px;
+  }
+}

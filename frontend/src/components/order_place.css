@@ -1,0 +1,54 @@
+/* Apply styles specifically for mobile devices */
+@media only screen and (max-width: 768px) {
+    
+   
+    /* Main container for the entire screen */
+    .main_container-order-place {
+        display: flex;
+        height: 100vh; /* Full height of the viewport */
+        background-color: black; /* Dark background */
+        background-image: linear-gradient(to bottom, #1266C1, #FF1000,#FBB03C); 
+
+    }
+
+    /* Container for the buttons */
+    .button-container {
+        display: flex;
+        flex-direction: column; /* Stack buttons vertically */
+        justify-content: space-around;
+        height: 80%; /* Full height of the container */
+        margin-top: 80px;
+    }
+
+    /* Styles for each button */
+    .button_1{
+        background-color: #ecf1f700;
+        transform: rotate(90deg); /* Rotate button 90 degrees counter-clockwise */
+        height: 40px; /* Height of each button */
+       width: 140px;
+       margin-left: -50px;
+       box-sizing: border-box; /* Include padding in the element's total width and height */
+        color: white;
+        font-weight: 600;
+        border: none;
+        border: 1px solid white;
+    }
+
+
+    /* Content area beside the buttons */
+    .content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;   
+        padding: 20px;
+        color: white;
+    }
+
+.content img{
+    width: 135px;
+    height: 188px;
+}
+    
+}

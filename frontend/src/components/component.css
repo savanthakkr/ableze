@@ -1,0 +1,68 @@
+.button.is-primary {
+    background-color: var(--main-accent-color);
+}
+
+.button.is-primary:hover {
+    background-color: var(--title-color);
+}
+
+.title {
+    color: var(--main-accent-color);
+    font-family: 'Inconsolata', monospace;
+    font-size: 3em;
+}
+
+#inner-large-banner {
+    height: 40%;
+    width: 100%;
+    /* background-image: url('img/forest.jpg'); */
+    background-size: cover;
+    background-position: 50% 25%;
+}
+
+#wrapper {
+    width: 80%;
+    min-height: 70%;
+    /* margin-top: -100px; */
+    background-color: var(--main-top-background-color);
+    margin: -100px auto 0 auto;
+    padding: 30px;
+    box-shadow: 0 0.5em 1em -0.125em rgb(10 10 10 / 10%), 0 0 0 1px rgb(10 10 10 / 2%);
+    border-radius: .25rem;
+}
+.card{
+    padding: 20px;
+    height: 100%;
+    width: 100%;
+}
+.product-grid {
+    
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+.product-title {
+    font-size: 2em;
+}
+.product-button{
+    display: flex;
+    justify-content: space-between;
+}
+.More-Details{
+    color: black;
+    text-decoration: none;
+    padding: 3px 15px 3px 15px;
+    border: 0.5px solid black;
+    border-radius: 10px;
+    background-color: rgb(252, 252, 252);
+    /* padding: 10px; */
+    /* width: 100%; */
+}
+.Delete, .Edit{
+    background-color: rgb(252, 252, 252);
+    color: black;
+    border-radius: 10px;
+    padding: 3px 15px 3px 15px;
+    border: 0.5px solid black;
+}

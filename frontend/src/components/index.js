@@ -65,8 +65,9 @@ const FormPage = () => {
     if (validateForm()) {
       setLoading(true);
 
+      // https://ableze.fullstackresolutions.com/api/users/loginUserOrcreate
       try {
-        const response = await axios.post('https://ableze.fullstackresolutions.com/api/users/loginUserOrcreate', {
+        const response = await axios.post('https://apiableze.fullstackresolutions.com/api/users/loginUserOrcreate', {
           name: formData.fullName,
           email: formData.email,
           phone: formData.mobileNumber,

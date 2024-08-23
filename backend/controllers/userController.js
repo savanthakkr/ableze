@@ -81,6 +81,7 @@ const sendPasswordOTP = async (req, res) => {
 const loginUserOrcreate = async (req, res) => {
   try {
     const { name, email, phone, tableNumber } = req.body;
+    
 
     // Check if the user exists
     const [existingUser] = await sequelize.query(

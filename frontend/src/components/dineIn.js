@@ -33,7 +33,7 @@ const DineIn = () => {
 
         if (!openAccordion[key]) {
             try {
-                const response = await axios.get(`https://ableze.fullstackresolutions.com/api/getproduct/${categoryId}`, {
+                const response = await axios.get(`https://apiableze.fullstackresolutions.com/api/getproduct/${categoryId}`, {
                     headers: {
                         Authorization: token,
                     },
@@ -56,9 +56,9 @@ const DineIn = () => {
     const fetchCartCounts = async () => {
         try { // Replace with your logic to get the current user ID
             const [foodResponse, drinksResponse, sheeshaResponse] = await Promise.all([
-                axios.get(`https://ableze.fullstackresolutions.com/api/getCartCountByCategory/1`, { headers: { Authorization: token } }).catch(() => ({ data: { count: 0 } })),
-                axios.get(`https://ableze.fullstackresolutions.com/api/getCartCountByCategory/2`, { headers: { Authorization: token } }).catch(() => ({ data: { count: 0 } })),
-                axios.get(`https://ableze.fullstackresolutions.com/api/getCartCountByCategory/3`, { headers: { Authorization: token } }).catch(() => ({ data: { count: 0 } })),
+                axios.get(`https://apiableze.fullstackresolutions.com/api/getCartCountByCategory/1`, { headers: { Authorization: token } }).catch(() => ({ data: { count: 0 } })),
+                axios.get(`https://apiableze.fullstackresolutions.com/api/getCartCountByCategory/2`, { headers: { Authorization: token } }).catch(() => ({ data: { count: 0 } })),
+                axios.get(`https://apiableze.fullstackresolutions.com/api/getCartCountByCategory/3`, { headers: { Authorization: token } }).catch(() => ({ data: { count: 0 } })),
             ]);
 
             setCounters({
@@ -75,7 +75,7 @@ const DineIn = () => {
 
 
     const fetchCartItems = () => {
-        axios.get(`https://ableze.fullstackresolutions.com/api/cart`, {
+        axios.get(`https://apiableze.fullstackresolutions.com/api/cart`, {
             headers: {
                 Authorization: token,
             },
@@ -105,7 +105,7 @@ const DineIn = () => {
 
 
     const fetchCategories = (id) => {
-        axios.get(`https://ableze.fullstackresolutions.com/api/subcategory/${id}`, {
+        axios.get(`https://apiableze.fullstackresolutions.com/api/subcategory/${id}`, {
             headers: {
                 Authorization: token,
             },
@@ -128,7 +128,7 @@ const DineIn = () => {
         setLoading((prev) => ({ ...prev, [productId]: true }));
         const currentQuantity = quantities[productId] || 0;
         if (currentQuantity > 0) {
-            axios.put(`https://ableze.fullstackresolutions.com/api/updateCart/${productId}`, { action: 'decrement' }, {
+            axios.put(`https://apiableze.fullstackresolutions.com/api/updateCart/${productId}`, { action: 'decrement' }, {
                 headers: {
                     Authorization: token,
                 },
@@ -151,7 +151,7 @@ const DineIn = () => {
 
     const handleIncrement = (productId) => {
         setLoading((prev) => ({ ...prev, [productId]: true }));
-        axios.post(`https://ableze.fullstackresolutions.com/api/checkCart`, { productId }, {
+        axios.post(`https://apiableze.fullstackresolutions.com/api/checkCart`, { productId }, {
             headers: {
                 Authorization: token,
             },
@@ -159,7 +159,7 @@ const DineIn = () => {
             .then(response => {
                 if (response.data.inCart) {
                     // If product is already in the cart, increment its quantity
-                    axios.put(`https://ableze.fullstackresolutions.com/api/updateCart/${productId}`, { action: 'increment' }, {
+                    axios.put(`https://apiableze.fullstackresolutions.com/api/updateCart/${productId}`, { action: 'increment' }, {
                         headers: {
                             Authorization: token,
                         },
@@ -177,7 +177,7 @@ const DineIn = () => {
                         });
                 } else {
                     // If product is not in the cart, add it with a quantity of 1
-                    axios.post(`https://ableze.fullstackresolutions.com/api/addToCart`, { productId, quantity: 1 }, {
+                    axios.post(`https://apiableze.fullstackresolutions.com/api/addToCart`, { productId, quantity: 1 }, {
                         headers: {
                             Authorization: token,
                         },
@@ -205,7 +205,7 @@ const DineIn = () => {
         try {
             const tableNumber = localStorage.getItem('tableNumber');
 
-            const response = await axios.post('https://ableze.fullstackresolutions.com/api/placeOrder', {
+            const response = await axios.post('https://apiableze.fullstackresolutions.com/api/placeOrder', {
                 tableNumber,
             }, {
                 headers: {

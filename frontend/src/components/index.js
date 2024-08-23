@@ -66,7 +66,7 @@ const FormPage = () => {
       setLoading(true);
 
       try {
-        const response = await axios.post('http://192.168.1.6:5000/api/users/loginUserOrcreate', {
+        const response = await axios.post('https://ableze.fullstackresolutions.com/api/users/loginUserOrcreate', {
           name: formData.fullName,
           email: formData.email,
           phone: formData.mobileNumber,

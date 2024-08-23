@@ -33,7 +33,7 @@ const AddProduct = () => {
         };
 
         try {
-            const response = await axios.post('http://localhost:5000/api/addProduct', data, {
+            const response = await axios.post('https://ableze.fullstackresolutions.com/api/addProduct', data, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

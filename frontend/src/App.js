@@ -6,6 +6,7 @@ import DineIn from './components/dineIn';
 import FormPage from './components';
 import ProtectedRoute from './components/protectRout';
 import OrderPlaced from './components/order_place';
+import AddProduct from './components/addProduct';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Route path="/AllProduct" element={<ProtectedRoute><AllProduct /></ProtectedRoute>} />
       <Route path="/DineIn" element={<ProtectedRoute><DineIn /></ProtectedRoute>} />
       <Route path="/OrderPlaced" element={<ProtectedRoute><OrderPlaced /></ProtectedRoute>} />
+      <Route path="/AddProduct" element={<ProtectedRoute><AddProduct /></ProtectedRoute>} />
       
     </Routes>
   );

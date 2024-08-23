@@ -43,6 +43,9 @@ const DineIn = () => {
                     [key]: response.data,
                 }));
 
+                console.log(response.data);
+
+
                 console.log(products);
             } catch (error) {
                 console.error('Error fetching products:', error);
@@ -132,6 +135,7 @@ const DineIn = () => {
             })
                 .then(() => {
                     fetchCartItems();
+                    fetchCategories(1);
                     fetchCartCounts();
                 })
                 .catch(error => {
@@ -162,6 +166,7 @@ const DineIn = () => {
                     })
                         .then(() => {
                             fetchCartItems();
+                            fetchCategories(1);
                             fetchCartCounts();
                         })
                         .catch(error => {
@@ -178,7 +183,9 @@ const DineIn = () => {
                         },
                     })
                         .then(() => {
-                            fetchCartItems(); // Refresh the cart items
+                            fetchCartItems();
+                            fetchCategories(1);
+                            fetchCartCounts(); // Refresh the cart items
                         })
                         .catch(error => {
                             console.error('Error adding to cart:', error);
@@ -222,35 +229,52 @@ const DineIn = () => {
         }
     };
 
-    const renderMenuItem = (product) => (
-        <div key={product.id} className="menu-item d-flex justify-content-between align-items-center">
-            <div className="menu-info">
-                <img
-                    src={product.image_url}
-                    alt={product.title}
-                    className="menu-img"
-                />
-                <div className="menu-details">
-                    <h5>{product.title}</h5>
-                    <p>{product.description}</p>
+    const renderMenuItem = (product) => {
+        return (
+            <div key={product.id} className="menu-item">
+                <div className="menu-info">
+                    <div className="product-images">
+                        {product.image && (
+                            <img
+                                src={`http://192.168.1.6:5000/${product.image}`}
+                                alt={product.title}
+                                className="image"
+                            />
+                        )}
+                    </div>
+                    <div className="menu-details">
+                        <h5>₹{product.price}</h5>
+                        <h5>{product.title}</h5>
+                        <p>{product.description}</p>
+                    </div>
+                </div>
+                <div className="menu-quantity">
+                    <button
+                        className="btn btn-light"
+                        onClick={() => handleDecrement(product.id)}
+                        disabled={loading[product.id]}
+                    >
+                        {loading[product.id] ? 'Loading...' : '-'}
+                    </button>
+                    <input
+                        type="number"
+                        value={quantities[product.id] || 0}
+                        className="quantity-input"
+                        readOnly
+                    />
+                    <button
+                        className="btn btn-light"
+                        onClick={() => handleIncrement(product.id)}
+                        disabled={loading[product.id]}
+                    >
+                        {loading[product.id] ? 'Loading...' : '+'}
+                    </button>
                 </div>
             </div>
-            <div className="menu-quantity">
-                <button className="btn btn-light" onClick={() => handleDecrement(product.id)} disabled={loading[product.id]}>
-                    {loading[product.id] ? 'Loading...' : '-'}
-                </button>
-                <input
-                    type="number"
-                    value={quantities[product.id] || 0}
-                    className="quantity-input"
-                    readOnly
-                />
-                <button className="btn btn-light" onClick={() => handleIncrement(product.id)} disabled={loading[product.id]}>
-                    {loading[product.id] ? 'Loading...' : '+'}
-                </button>
-            </div>
-        </div>
-    );
+        );
+    };
+
+
 
     return (
         <div className="container main_container dine_in_container">

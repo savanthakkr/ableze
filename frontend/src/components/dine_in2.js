@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import './dine_in.css'; // Import your custom CSS
 import { Helmet } from 'react-helmet';
 
-const userId = 1; // Replace with the actual user ID
 
 const DineIn = () => {
     const [activeTab, setActiveTab] = useState('food');

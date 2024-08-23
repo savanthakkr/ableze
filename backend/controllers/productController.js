@@ -5,25 +5,105 @@ const path = require('path');
 const QRCode = require('qrcode');
 const jwt = require('jsonwebtoken');
 const { verifyToken } = require('../middlewares/roleMiddleware');
+const multer = require('multer');
+// Set up storage with multer to store images in the 'uploads' directory
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// Create the 'uploads' directory if it doesn't exist
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
 
 
+const saveBase64Image = (base64String, folderPath) => {
+  const matches = base64String.match(/^data:(.+);base64,(.+)$/);
+  if (!matches || matches.length !== 3) {
+      throw new Error('Invalid base64 string');
+  }
+
+  const ext = matches[1].split('/')[1]; // get the image extension
+  const buffer = Buffer.from(matches[2], 'base64'); // decode base64 string
+
+  const fileName = `${Date.now()}.${ext}`;
+  const filePath = path.join(folderPath, fileName);
+
+  fs.writeFileSync(filePath, buffer); // save the file to the uploads folder
+
+  return filePath; // return the file path for saving in the database
+};
 
 const addProduct = async (req, res) => {
+  const { category_id, sub_category_id, title, description, image } = req.body;
+
+  if (!image) {  // Corrected: Changed `req.file` to `image`
+      return res.status(400).json({ message: 'Image is required' });
+  }
+
   try {
-    const { category_id, sub_category_id, title, description } = req.body;
-    const result = await sequelize.query(
-      'INSERT INTO product (category_id,sub_category_id, title, description ) VALUES (?, ?, ?, ?)',
-      {
-        replacements: [category_id, sub_category_id, title, description],
-        type: QueryTypes.INSERT
-      }
-    );
-    res.json({ message: 'product added!', id: result[0] });
-  } catch (error) {
-    console.error('Error adding product:', error);
-    res.status(500).json({ error: 'Internal server error' });
+      // Save the image path
+      const imagePath = saveBase64Image(image, 'uploads');
+
+      // Assuming you have database logic here
+      const result = await sequelize.query(
+          'INSERT INTO product (category_id, sub_category_id, title, description, image) VALUES (?, ?, ?, ?, ?)',
+          {
+              replacements: [category_id, sub_category_id, title, description, imagePath],
+              type: QueryTypes.INSERT
+          }
+      );
+
+      res.status(201).json({
+          message: 'Product added successfully',
+          productId: result[0], // Use the correct index for the result
+          data: {
+              category_id,
+              sub_category_id,
+              title,
+              description,
+              imagePath
+          }
+      });
+  } catch (err) {
+      console.error('Database error:', err);
+      res.status(500).json({ message: 'Database error', error: err });
   }
 };
+
+
+
+
+
+// const addProduct = async (req, res) => {
+//   try {
+//     const { category_id, sub_category_id, title, description,image } = req.body;
+
+//     console.log(image);
+    
+    
+
+//     const result = await sequelize.query(
+//       'INSERT INTO product (category_id, sub_category_id, title, description, image) VALUES (?, ?, ?, ?, ?)',
+//       {
+//         replacements: [category_id, sub_category_id, title, description, image],
+//         type: QueryTypes.INSERT
+//       }
+//     );
+
+//     res.json({ message: 'Product added!', id: result[0] });
+//   } catch (error) {
+//     console.error('Error adding product:', error);
+//     res.status(500).json({ error: 'Internal server error' });
+//   }
+// };
 
 const getproduct = async (req, res) => {
   try {
@@ -135,6 +215,8 @@ const updateProductCart = async (req, res) => {
     const userId = req.user.id;
 
     let updateQuery;
+    let replacements = [userId, productId];
+
     if (action === 'increment') {
       updateQuery = `
           UPDATE cart 
@@ -143,24 +225,44 @@ const updateProductCart = async (req, res) => {
           AND product_id = ? 
           AND status = 0`;
     } else if (action === 'decrement') {
-      updateQuery = `
-          UPDATE cart 
-          SET quantity = quantity - 1 
-          WHERE user_id = ? 
-          AND product_id = ? 
-          AND status = 0 
-          AND quantity > 1`;
+      // First check the current quantity
+      const [cartItem] = await sequelize.query(
+        'SELECT quantity FROM cart WHERE user_id = ? AND product_id = ? AND status = 0',
+        { replacements, type: QueryTypes.SELECT }
+      );
+
+      if (!cartItem) {
+        return res.status(404).json({ error: true, message: 'Cart item not found' });
+      }
+
+      if (cartItem.quantity > 1) {
+        updateQuery = `
+            UPDATE cart 
+            SET quantity = quantity - 1 
+            WHERE user_id = ? 
+            AND product_id = ? 
+            AND status = 0 
+            AND quantity > 1`;
+      } else {
+        // If quantity is 1, remove the item from the cart
+        updateQuery = `
+            DELETE FROM cart 
+            WHERE user_id = ? 
+            AND product_id = ? 
+            AND status = 0`;
+      }
     } else {
       return res.status(400).json({ error: true, message: 'Invalid action' });
     }
 
-    await sequelize.query(updateQuery, { replacements: [userId, productId], type: QueryTypes.UPDATE });
+    await sequelize.query(updateQuery, { replacements, type: QueryTypes.INSERT });
     res.status(200).json({ message: 'Cart updated', error: false });
   } catch (error) {
     console.error('Error updating cart:', error);
     res.status(500).json({ message: 'Internal server error', error: true });
   }
 };
+
 
 const placeOrder = async (req, res) => {
   const userId = req.user.id;
@@ -212,14 +314,82 @@ const fetchCart = async (req, res) => {
 }
 
 
+const getOrdersWithCartItems = async (req, res) => {
+  try {
+    const ordersWithCartItems = await sequelize.query(
+      `
+      SELECT 
+        orders.id as order_id,
+        orders.table_number,
+        user.name as user_name,
+        user.phone as user_phone,
+        GROUP_CONCAT(JSON_OBJECT(
+          'cart_id', cart.id,
+          'product_id', cart.product_id,
+          'quantity', cart.quantity,
+          'status', cart.status,
+          'product_name', product.title,
+          'product_price', product.price,
+          'product_description', product.description
+        )) AS cart_items
+      FROM orders
+      LEFT JOIN cart ON orders.id = cart.order_id
+      LEFT JOIN product ON cart.product_id = product.id
+      LEFT JOIN user ON orders.user_id = user.id
+      GROUP BY orders.id
+      `,
+      { type: QueryTypes.SELECT }
+    );
+
+    const result = ordersWithCartItems.map(order => ({
+      order_id: order.order_id,
+      table_number: order.table_number,
+      user_name: order.user_name,
+      user_phone: order.user_phone,
+      cart_items: JSON.parse(`[${order.cart_items}]`)
+    }));
+
+    res.status(200).json({ orders: result, error: false });
+  } catch (error) {
+    console.error('Error fetching orders with cart items:', error);
+    res.status(500).json({ message: 'Internal server error', error: true });
+  }
+};
+
+
+
+
+
+
+const fetchVideos = async (req, res) => {
+  try {
+    const results = await sequelize.query(
+      'SELECT * FROM product',
+      { type: QueryTypes.SELECT }
+    );
+
+    res.status(200).json(results);
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+
+const uploadMiddleware = upload.single('image');
 
 
 module.exports = { 
   placeOrder,
+  fetchVideos,
    qrcodeganrate, 
    getCartCountByCategory, 
    fetchCart, 
    updateProductCart,
+   uploadMiddleware,
+   getOrdersWithCartItems,
     addProductCart, 
    checkProductCart, 
    getproduct, 

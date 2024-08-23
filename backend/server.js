@@ -35,15 +35,17 @@ const sessionConfig = {
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 app.use(morgan('dev'));
 app.use(cors());
 app.use(fileUpload());
-app.use('/public', express.static(path.join(__dirname, './public/')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(session(sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
+
+
 
 // Test the database connection
 testConnection()
@@ -51,7 +53,7 @@ testConnection()
     // Routes
     app.use('/api', userRoutes);
     app.use('/api', categoryRoutes);
-    app.use('/api', productRoutes);
+    app.use('/api',  productRoutes);
 
 
     const server = http.createServer(app);
